@@ -1,0 +1,174 @@
+/* ==========================================================================
+   1. IMPORTACIÓN DE TIPOGRAFÍA Y ESTILOS BASE
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap');
+
+:root {
+    /* Variables personalizadas para transiciones suaves */
+    --transicion-estandar: all 0.25s ease-in-out;
+    --borde-radio-tarjeta: 0.75rem; /* 12px exactos como el wireframe */
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; /* Cumple requisito de usabilidad: mínimo 16px */
+    line-height: 1.5; /* Cumple interlineado > 1.25 para mitigar fatiga visual */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Inter Tight', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   2. TRANSICIONES Y ACCESIBILIDAD DE TEMA (CLARO / OSCURO)
+   ========================================================================== */
+/* Aseguramos que todas las tarjetas, fondos y bordes cambien suavemente al alternar el tema */
+.navbar, .modal-content, .card-evento, .bg-body-tertiary, .form-control, .form-select {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Mejora de contraste para modo oscuro en bordes sutiles */
+[data-bs-theme="dark"] .border-subtle-custom {
+    border-color: #333333 !important;
+}
+
+[data-bs-theme="dark"] .placeholder-img-wireframe {
+    background-color: #222222 !important;
+    border-color: #444444 !important;
+    color: #888888 !important;
+}
+
+/* ==========================================================================
+   3. TARJETAS DE EVENTOS (FIDELIDAD AL WIREFRAME)
+   ========================================================================== */
+.card-evento {
+    border-radius: var(--borde-radio-tarjeta);
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-card-bg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: var(--transicion-estandar);
+}
+
+/* Microinteracción: Elevación sutil al pasar el mouse por encima */
+.card-evento:hover {
+    transform: translateY(-4px);
+    border-color: #888888;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="dark"] .card-evento:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Placeholder visual del wireframe (Relación 16:9 exacta) */
+.placeholder-img-wireframe {
+    aspect-ratio: 16 / 9;
+    background-color: #e0e0e0;
+    border-bottom: 1px solid #c8c8c8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #666666;
+}
+
+.icono-placeholder {
+    width: 32px;
+    height: 32px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.icono-placeholder::after {
+    content: '';
+    width: 16px;
+    height: 12px;
+    border: 1px solid currentColor;
+}
+
+/* ==========================================================================
+   4. BADGES Y ETIQUETAS DE ESTADO
+   ========================================================================== */
+.badge-categoria {
+    font-family: monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.35em 0.65em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 4px;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+}
+
+/* Estilos específicos de disponibilidad basados en tu documento de análisis */
+.badge-disponible {
+    background-color: #f0f0f0;
+    color: #111111;
+    border: 1px solid #c8c8c8;
+    font-family: monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .badge-disponible {
+    background-color: #1e3a29;
+    color: #6cf0a1;
+    border-color: #2b593f;
+}
+
+.badge-lleno {
+    background-color: #222222;
+    color: #ffffff;
+    border: 1px solid #111111;
+    font-family: monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .badge-lleno {
+    background-color: #4a1c1c;
+    color: #ff8c8c;
+    border-color: #732a2a;
+}
+
+.badge-finalizado {
+    background-color: #dddddd;
+    color: #666666;
+    border: 1px solid #cccccc;
+    font-family: monospace;
+    font-size: 0.7rem;
+}
+
+[data-bs-theme="dark"] .badge-finalizado {
+    background-color: #2a2a2a;
+    color: #888888;
+    border-color: #3f3f3f;
+}
+
+/* ==========================================================================
+   5. BOTONES Y ACCESIBILIDAD TÁCTIL (MOBILE-FIRST)
+   ========================================================================== */
+/* Altura mínima de zonas táctiles para smartphones (44x44px) */
+.btn-accion-tarjeta {
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    border-radius: 0.5rem;
+    width: 100%;
+    transition: var(--transicion-estandar);
+}
+
+.btn-accion-tarjeta:active {
+    transform: scale(0.98);
+}
