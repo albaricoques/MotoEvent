@@ -1,15 +1,8 @@
 class Evento {
-    #id;
-    #nombre;
-    #fecha;
-    #ciudad;
-    #categoria;
-    #aforoMaximo;
-    #inscritosActuales;
-    #estado;
-    #imagen; 
+    #id; #nombre; #fecha; #ciudad; #categoria; #aforoMaximo; #inscritosActuales; #estado; #imagen; 
+    #destacado;
 
-    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales = 0, estado = 'DISPONIBLE', imagen = '') {
+    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales = 0, estado = 'DISPONIBLE', imagen = '', destacado = false) {
         this.#id = id;
         this.#nombre = nombre;
         this.#fecha = fecha;
@@ -19,6 +12,7 @@ class Evento {
         this.#inscritosActuales = inscritosActuales;
         this.#estado = estado;
         this.#imagen = imagen;
+        this.#destacado = destacado;
     }
 
     get id() { return this.#id; }
@@ -30,6 +24,7 @@ class Evento {
     get inscritosActuales() { return this.#inscritosActuales; }
     get estado() { return this.#estado; }
     get imagen() { return this.#imagen; }
+    get destacado() { return this.#destacado; }
 
     set inscritosActuales(nuevoValor) {
         if (nuevoValor >= 0 && nuevoValor <= this.#aforoMaximo) {
@@ -40,11 +35,7 @@ class Evento {
 
     #actualizarEstadoAutomatico() {
         if (this.#estado !== 'FINALIZADO') {
-            if (this.#inscritosActuales >= this.#aforoMaximo) {
-                this.#estado = 'LLENO';
-            } else {
-                this.#estado = 'DISPONIBLE';
-            }
+            this.#estado = this.#inscritosActuales >= this.#aforoMaximo ? 'LLENO' : 'DISPONIBLE';
         }
     }
 
@@ -66,17 +57,24 @@ class Evento {
         return false;
     }
 
+/*
+    Método polimórfico
+    -------------------------------
+*/    
     obtenerDetallesEspeciales() {
-        return `<p class="mb-1 text-muted small"><i class="bi bi-info-circle me-1"></i> Evento estándar del circuito automotriz.</p>`;
+        return `<p class="mb-1 text-muted small"><i class="bi bi-info-circle me-1"></i> Evento estándar.</p>`;
     }
 }
 
+/*  
+    Subclace 1
+    -------------------------------
+*/
 class EventoCompetencia extends Evento {
-    #premio;
-    #requiereLicencia;
+    #premio; #requiereLicencia;
 
-    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, premio, requiereLicencia = true) {
-        super(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen);
+    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, destacado, premio, requiereLicencia = true) {
+        super(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, destacado);
         this.#premio = premio;
         this.#requiereLicencia = requiereLicencia;
     }
@@ -84,20 +82,22 @@ class EventoCompetencia extends Evento {
     obtenerDetallesEspeciales() {
         return `
             <div class="alert alert-warning py-2 px-3 mb-2 small border-warning">
-                <div class="fw-bold"><i class="bi bi-trophy-fill me-1"></i> Evento de Competencia</div>
-                <div><strong>Premio principal:</strong> ${this.#premio}</div>
-                <div><strong>Requisito:</strong> ${this.#requiereLicencia ? 'Licencia deportiva FPDV o SOAT vigente exigido.' : 'Apto para corredores amateur.'}</div>
-            </div>
-        `;
+                <div class="fw-bold"><i class="bi bi-trophy-fill me-1"></i> Competencia</div>
+                <div><strong>Premio:</strong> ${this.#premio}</div>
+                <div><strong>Requisito:</strong> ${this.#requiereLicencia ? 'Licencia deportiva vigente exigida.' : 'Apto para amateur.'}</div>
+            </div>`;
     }
 }
 
+/*
+    Subclase 2
+    -------------------------------
+*/
 class EventoFeria extends Evento {
-    #numeroExpositores;
-    #aptoFamilia;
+    #numeroExpositores; #aptoFamilia;
 
-    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, numeroExpositores, aptoFamilia = true) {
-        super(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen);
+    constructor(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, destacado, numeroExpositores, aptoFamilia = true) {
+        super(id, nombre, fecha, ciudad, categoria, aforoMaximo, inscritosActuales, estado, imagen, destacado);
         this.#numeroExpositores = numeroExpositores;
         this.#aptoFamilia = aptoFamilia;
     }
@@ -105,59 +105,67 @@ class EventoFeria extends Evento {
     obtenerDetallesEspeciales() {
         return `
             <div class="alert alert-info py-2 px-3 mb-2 small border-info">
-                <div class="fw-bold"><i class="bi bi-people-fill me-1"></i> Exhibición y Feria</div>
-                <div><strong>Stands y marcas:</strong> Más de ${this.#numeroExpositores} expositores confirmados.</div>
-                <div><strong>Ambiente:</strong> ${this.#aptoFamilia ? '100% Familiar.' : 'Exclusivo mayores de 18 años.'}</div>
-            </div>
-        `;
+                <div class="fw-bold"><i class="bi bi-people-fill me-1"></i> Feria de Exhibición</div>
+                <div><strong>Marcas:</strong> Más de ${this.#numeroExpositores} expositores.</div>
+                <div><strong>Ambiente:</strong> ${this.#aptoFamilia ? '100% Familiar.' : 'Solo adultos.'}</div>
+            </div>`;
     }
 }
 
+/*
+    Clase de operaciones
+*/
+
 class GestorEventos {
-    #catalogo;
-    #idsInscritosUsuario; 
+    #catalogo; #idsInscritosUsuario; 
 
     constructor() {
         this.#catalogo = [];
         this.#idsInscritosUsuario = new Set(); 
     }
 
+/*
+    Mockdata
+    -------------------------
+*/
     inicializarDatos() {
         this.#catalogo = [
-            new EventoFeria(1, "Lima Classic Car Show 2026", "15 Mar 2026", "Lima", "Clásicos", 150, 103, "DISPONIBLE", "img/clasicos.jpg", 45, true),
-            new EventoCompetencia(2, "Rally Tierra de Los Andes", "22 Mar 2026", "Arequipa", "Rally", 50, 38, "DISPONIBLE", "img/rally.jpg", "S/. 15,000 + Trofeo", true),
-            new EventoFeria(3, "Moto Fest Trujillo", "29 Mar 2026", "Trujillo", "Motos", 300, 166, "DISPONIBLE", "img/motos.jpg", 25, true),
-            new EventoCompetencia(4, "Tuning Show Callao", "05 Abr 2026", "Callao", "Tuning", 80, 80, "LLENO", "img/tuning.jpg", "Kit Audio Pioneer + Copa", false),
-            new EventoFeria(5, "Feria Automotriz Peru Motor", "12 Abr 2026", "Lima", "Feria", 600, 80, "DISPONIBLE", "img/feria.jpg", 80, true),
-            new EventoCompetencia(6, "Supercar Day Miraflores", "19 Abr 2026", "Lima", "Deportivos", 40, 40, "FINALIZADO", "img/deportivos.jpg", "Exhibición VIP", true)
+            new EventoFeria(1, "Lima Classic Car Show 2025", "15 Mar 2025", "Lima", "Clásicos", 150, 103, "DISPONIBLE", "img/clasicos.jpg", true, 45, true),
+            new EventoCompetencia(2, "Rally Tierra de Los Andes", "22 Mar 2025", "Arequipa", "Rally", 50, 38, "DISPONIBLE", "img/rally.jpg", true, "S/. 15,000 + Trofeo", true),
+            new EventoFeria(3, "Moto Fest Trujillo", "29 Mar 2025", "Trujillo", "Motos", 300, 166, "DISPONIBLE", "img/motos.jpg", false, 25, true),
+            new EventoCompetencia(4, "Tuning Show Callao", "05 Abr 2025", "Callao", "Tuning", 80, 80, "LLENO", "img/tuning.jpg", false, "Kit Audio Pioneer", false),
+            new EventoFeria(5, "Feria Automotriz Peru Motor", "12 Abr 2025", "Lima", "Feria", 600, 80, "DISPONIBLE", "img/feria.jpg", false, 80, true),
+            new EventoCompetencia(6, "Supercar Day Miraflores", "19 Abr 2025", "Lima", "Deportivos", 40, 40, "FINALIZADO", "img/deportivos.jpg", false, "Exhibición VIP", true)
         ];
     }
 
     obtenerTodos() { return this.#catalogo; }
     obtenerPorId(id) { return this.#catalogo.find(e => e.id === id); }
 
-    filtrarEventos(criterioBusqueda, categoria, ciudad) {
-        return this.#catalogo.filter(evento => {
-            const coincideTexto = !criterioBusqueda || 
-                evento.nombre.toLowerCase().includes(criterioBusqueda.toLowerCase()) ||
-                evento.ciudad.toLowerCase().includes(criterioBusqueda.toLowerCase()) ||
-                evento.fecha.toLowerCase().includes(criterioBusqueda.toLowerCase());
-            
-            const coincideCategoria = categoria === 'TODOS' || evento.categoria === categoria;
-            const coincideCiudad = ciudad === 'TODOS' || evento.ciudad === ciudad;
-
-            return coincideTexto && coincideCategoria && coincideCiudad;
+    filtrarEventos(criterio, categoria, ciudad) {
+        return this.#catalogo.filter(e => {
+            const txt = !criterio || e.nombre.toLowerCase().includes(criterio.toLowerCase()) || e.ciudad.toLowerCase().includes(criterio.toLowerCase());
+            const cat = categoria === 'TODOS' || e.categoria === categoria;
+            const ciu = ciudad === 'TODOS' || e.ciudad === ciudad;
+            return txt && cat && ciu;
         });
     }
-
+/*
+    Metodos para verificar inscripción
+    --------------------------------------
+*/
     estaInscrito(idEvento) { return this.#idsInscritosUsuario.has(idEvento); }
     obtenerEventosInscritos() { return this.#catalogo.filter(e => this.#idsInscritosUsuario.has(e.id)); }
 
+/*
+    Metodos para inscribir y cancelar inscripción
+    -----------------------------------------------
+*/
     inscribirUsuario(idEvento) {
-        if (this.estaInscrito(idEvento)) return { exito: false, mensaje: "Ya estás inscrito en este evento." };
+        if (this.estaInscrito(idEvento)) return { exito: false, mensaje: "Ya estás inscrito." };
         const evento = this.obtenerPorId(idEvento);
         if (!evento) return { exito: false, mensaje: "Evento no encontrado." };
-        if (evento.estado !== 'DISPONIBLE') return { exito: false, mensaje: `No te puedes inscribir: El evento está ${evento.estado.toLowerCase()}.` };
+        if (evento.estado !== 'DISPONIBLE') return { exito: false, mensaje: `Evento ${evento.estado.toLowerCase()}.` };
         
         if (evento.registrarInscripcion()) {
             this.#idsInscritosUsuario.add(idEvento);
@@ -167,19 +175,20 @@ class GestorEventos {
     }
 
     cancelarInscripcionUsuario(idEvento) {
-        if (!this.estaInscrito(idEvento)) return { exito: false, mensaje: "No estás inscrito en este evento." };
+        if (!this.estaInscrito(idEvento)) return { exito: false, mensaje: "No estás inscrito." };
         const evento = this.obtenerPorId(idEvento);
         if (evento && evento.cancelarInscripcion()) {
             this.#idsInscritosUsuario.delete(idEvento);
-            return { exito: true, mensaje: `Has cancelado tu inscripción a ${evento.nombre}. Cupo liberado.` };
+            return { exito: true, mensaje: `Inscripción cancelada. Cupo liberado.` };
         }
-        return { exito: false, mensaje: "Error al intentar cancelar la inscripción." };
+        return { exito: false, mensaje: "Error al cancelar." };
     }
 }
 
-/* ==========================================================================
-   INTERACTIVIDAD DEL DOM, SPA Y EVENTOS VISUALES
-   ========================================================================== */
+/*
+    Interacción con el DOM
+    -------------------------------
+*/
 const gestor = new GestorEventos();
 gestor.inicializarDatos();
 
@@ -192,16 +201,117 @@ document.addEventListener('DOMContentLoaded', () => {
     modalCancelacionBootstrap = new bootstrap.Modal(document.getElementById('modalConfirmarCancelacion'));
     toastBootstrap = new bootstrap.Toast(document.getElementById('liveToast'));
 
-    aplicarFiltros();
+    renderizarCarrusel();
+    aplicarFiltros(); 
     actualizarContadorMisEventos();
-
     configurarEventosNavegacion();
     configurarEventosFiltros();
     configurarAlternadorTema();
     configurarAccionesModales();
 });
 
-function configurarAlternadorTema() {
+function renderizarCarrusel() {
+    const eventosDestacados = gestor.obtenerTodos().filter(e => e.destacado);
+    const indicadores = document.getElementById('carrusel-indicadores');
+    const contenido = document.getElementById('carrusel-contenido');
+
+    if (eventosDestacados.length === 0) {
+        document.getElementById('carruselPrincipal').style.display = 'none';
+        return;
+    }
+
+    indicadores.innerHTML = '';
+    contenido.innerHTML = '';
+
+    eventosDestacados.forEach((evento, index) => {
+        const activo = index === 0 ? 'active' : '';
+
+        // Botones indicadores inferiores
+        indicadores.insertAdjacentHTML('beforeend', `
+            <button type="button" data-bs-target="#carruselPrincipal" data-bs-slide-to="${index}" class="${activo}" ${index === 0 ? 'aria-current="true"' : ''} aria-label="Slide ${index + 1}"></button>
+        `);
+
+        // Slide con la imagen original del evento
+        contenido.insertAdjacentHTML('beforeend', `
+            <div class="carousel-item ${activo}">
+                <div class="carrusel-img bg-dark position-relative">
+                    <img src="${evento.imagen}" class="d-block w-100 h-100 object-fit-cover opacity-75" alt="${evento.nombre}" onerror="this.style.display='none'">
+                </div>
+                <div class="carousel-caption d-none d-md-block text-white text-shadow text-start ms-4 mb-4 pe-4">
+                    <span class="badge bg-warning text-dark mb-2"><i class="bi bi-star-fill me-1"></i>Evento Destacado</span>
+                    <h2 class="fw-bold display-5">${evento.nombre}</h2>
+                    <p class="fs-5"><i class="bi bi-geo-alt-fill me-1"></i>${evento.ciudad} | <i class="bi bi-calendar3 me-1"></i>${evento.fecha}</p>
+                    <button class="btn btn-primary fw-bold mt-2 px-4 shadow-sm" onclick="abrirModalDetalle(${evento.id})">Ver información e Inscribirse</button>
+                </div>
+            </div>
+        `);
+    });
+}
+
+function generarTarjetaHTML(evento) {
+    let claseBadge = evento.estado === 'LLENO' ? 'badge-lleno' : (evento.estado === 'FINALIZADO' ? 'badge-finalizado' : 'badge-disponible');
+    
+    let botonHTML = gestor.estaInscrito(evento.id) 
+        ? `<button class="btn btn-secondary btn-accion-tarjeta opacity-75" disabled><i class="bi bi-check-circle-fill me-1"></i> Ya inscrito</button>`
+        : `<button class="btn btn-outline-secondary btn-accion-tarjeta" onclick="abrirModalDetalle(${evento.id})">Ver detalle →</button>`;
+
+    let htmlDestacado = evento.destacado 
+        ? `<span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2 shadow-sm z-1"><i class="bi bi-star-fill me-1"></i>Destacado</span>` 
+        : '';
+
+    return `
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card-evento">
+                <div class="contenedor-imagen-evento position-relative">
+                    ${htmlDestacado}
+                    <img src="${evento.imagen}" alt="${evento.nombre}" class="img-evento" onerror="this.style.display='none'">
+                </div>
+                <div class="p-3 d-flex flex-column flex-grow-1 gap-2">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h3 class="h6 fw-bold mb-0">${evento.nombre}</h3>
+                        <span class="badge ${claseBadge}">${evento.estado}</span>
+                    </div>
+                    <div class="small text-muted d-flex flex-column gap-1 my-1">
+                        <div><i class="bi bi-calendar3 me-2"></i><strong>Fecha:</strong> ${evento.fecha}</div>
+                        <div><i class="bi bi-geo-alt me-2"></i><strong>Ciudad:</strong> ${evento.ciudad}</div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                        <span class="badge badge-categoria">${evento.categoria}</span>
+                        <span class="font-monospace small text-muted">${evento.inscritosActuales}/${evento.aforoMaximo} cupos</span>
+                    </div>
+                    <div class="pt-2">${botonHTML}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function aplicarFiltros() {
+    const texto = document.getElementById('input-busqueda').value;
+    const categoria = document.getElementById('filtro-categoria').value;
+    const ciudad = document.getElementById('filtro-ciudad').value;
+    
+    renderizarCatalogo(gestor.filtrarEventos(texto, categoria, ciudad));
+}
+
+function renderizarCatalogo(eventos) {
+    const contenedor = document.getElementById('contenedor-eventos');
+    document.getElementById('texto-resultados').textContent = `${eventos.length} evento(s) encontrado(s)`;
+    contenedor.innerHTML = '';
+
+    if (eventos.length === 0) {
+        contenedor.innerHTML = `<div class="col-12 text-center py-5"><i class="bi bi-search display-4 text-muted"></i><p class="mt-3 text-muted">No encontramos eventos que coincidan.</p></div>`;
+        return;
+    }
+
+    eventos.forEach(evento => contenedor.insertAdjacentHTML('beforeend', generarTarjetaHTML(evento)));
+}
+
+/*
+    Función para alternar tema claro/oscuro
+    ------------------------------------------------------------------------------------------------
+*/
+function configurarAlternadorTema() { 
     const btnTheme = document.getElementById('btn-theme-toggle');
     const htmlElement = document.documentElement;
 
@@ -219,6 +329,9 @@ function configurarAlternadorTema() {
         }
     });
 }
+/*
+    ----------------------------------------------------------------------------------------------------
+*/
 
 function configurarEventosNavegacion() {
     const seccionCatalogo = document.getElementById('seccion-catalogo');
@@ -257,60 +370,6 @@ function configurarEventosFiltros() {
         document.getElementById('filtro-categoria').value = 'TODOS';
         document.getElementById('filtro-ciudad').value = 'TODOS';
         aplicarFiltros();
-    });
-}
-
-function aplicarFiltros() {
-    const texto = document.getElementById('input-busqueda').value;
-    const categoria = document.getElementById('filtro-categoria').value;
-    const ciudad = document.getElementById('filtro-ciudad').value;
-    renderizarCatalogo(gestor.filtrarEventos(texto, categoria, ciudad));
-}
-
-function renderizarCatalogo(eventos) {
-    const contenedor = document.getElementById('contenedor-eventos');
-    document.getElementById('texto-resultados').textContent = `${eventos.length} evento(s) encontrado(s)`;
-    contenedor.innerHTML = '';
-
-    if (eventos.length === 0) {
-        contenedor.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-search display-4 text-muted"></i>
-                <p class="mt-3 text-muted">No encontramos eventos que coincidan con tus filtros.</p>
-            </div>`;
-        return;
-    }
-
-    eventos.forEach(evento => {
-        let claseBadge = evento.estado === 'LLENO' ? 'badge-lleno' : (evento.estado === 'FINALIZADO' ? 'badge-finalizado' : 'badge-disponible');
-        let botonHTML = gestor.estaInscrito(evento.id) 
-            ? `<button class="btn btn-secondary btn-accion-tarjeta opacity-75" disabled><i class="bi bi-check-circle-fill me-1"></i> Ya estás inscrito</button>`
-            : `<button class="btn btn-outline-secondary btn-accion-tarjeta" onclick="abrirModalDetalle(${evento.id})">Ver detalle →</button>`;
-
-        contenedor.insertAdjacentHTML('beforeend', `
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card-evento">
-                    <div class="contenedor-imagen-evento">
-                        <img src="${evento.imagen}" alt="${evento.nombre}" class="img-evento" onerror="this.style.display='none'">
-                    </div>
-                    <div class="p-3 d-flex flex-column flex-grow-1 gap-2">
-                        <div class="d-flex justify-content-between align-items-start gap-2">
-                            <h3 class="h6 fw-bold mb-0">${evento.nombre}</h3>
-                            <span class="badge ${claseBadge}">${evento.estado}</span>
-                        </div>
-                        <div class="small text-muted d-flex flex-column gap-1 my-1">
-                            <div><i class="bi bi-calendar3 me-2"></i><strong>Fecha:</strong> ${evento.fecha}</div>
-                            <div><i class="bi bi-geo-alt me-2"></i><strong>Ciudad:</strong> ${evento.ciudad}</div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
-                            <span class="badge badge-categoria">${evento.categoria}</span>
-                            <span class="font-monospace small text-muted">${evento.inscritosActuales}/${evento.aforoMaximo} cupos</span>
-                        </div>
-                        <div class="pt-2">${botonHTML}</div>
-                    </div>
-                </div>
-            </div>
-        `);
     });
 }
 
@@ -414,6 +473,7 @@ function configurarAccionesModales() {
                 mostrarToast(res.mensaje, 'advertencia');
                 actualizarContadorMisEventos();
                 renderizarMisEventos();
+                aplicarFiltros(); 
             } else {
                 mostrarToast(res.mensaje, 'error');
             }

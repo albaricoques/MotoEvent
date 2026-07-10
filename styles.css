@@ -17,16 +17,10 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     letter-spacing: -0.02em;
 }
 
-/* ==========================================================================
-   TRANSICIONES Y ACCESIBILIDAD DE TEMA (CLARO / OSCURO)
-   ========================================================================== */
 .navbar, .modal-content, .card-evento, .bg-body-tertiary, .form-control, .form-select, footer {
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ==========================================================================
-   TARJETAS DE EVENTOS E IMÁGENES REALES
-   ========================================================================== */
 .card-evento {
     border-radius: var(--borde-radio-tarjeta);
     border: 1px solid var(--bs-border-color);
@@ -53,7 +47,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-bottom: 1px solid var(--bs-border-color);
-    background-color: #e0e0e0;
+    background-color: #e0e0e0; 
 }
 
 [data-bs-theme="dark"] .contenedor-imagen-evento {
@@ -71,9 +65,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     transform: scale(1.08);
 }
 
-/* ==========================================================================
-   BADGES Y ETIQUETAS DE ESTADO
-   ========================================================================== */
 .badge-categoria {
     font-family: monospace;
     font-size: 0.68rem;
@@ -130,9 +121,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border-color: #3f3f3f;
 }
 
-/* ==========================================================================
-   BOTONES Y ACCESIBILIDAD TÁCTIL (MOBILE-FIRST)
-   ========================================================================== */
 .btn-accion-tarjeta {
     padding: 0.75rem 1.25rem;
     font-weight: 600;
@@ -147,9 +135,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     transform: scale(0.98);
 }
 
-/* ==========================================================================
-    LOGO PERSONALIZADO
-   ========================================================================== */
 .logo-marca {
     height: 36px;
     width: auto;
@@ -159,4 +144,22 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 .navbar-brand:hover .logo-marca {
     transform: scale(1.05);
+}
+
+.carrusel-img {
+    height: 300px;
+}
+
+@media (min-width: 768px) {
+    .carrusel-img {
+        height: 450px;
+    }
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.text-shadow {
+    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.9);
 }
